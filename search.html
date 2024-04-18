@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Webslesson Tutorial | Search HTML Table Data by using JQuery</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <style>
+        #result {
+            position: absolute;
+            width: 100%;
+            max-width: 870px;
+            cursor: pointer;
+            overflow-y: auto;
+            max-height: 400px;
+            box-sizing: border-box;
+            z-index: 1001;
+        }
+
+        .link-class:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+<br/><br/>
+<div class="container" style="width:900px;">
+    <h2 align="center">JSON Live Data Search using Ajax JQuery</h2>
+    <h3 align="center">Employee Data</h3>
+    <br/><br/>
+    <div align="center">
+        <input type="text" name="search" id="search" placeholder="Search Employee Details" class="form-control"/>
+    </div>
+    <ul class="list-group" id="result"></ul>
+    <br/>
+</div>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+
+        $('#search').keyup(function () {
+            $('#result').html('');
+            var searchField = $('#search').val();
+            var expression = new RegExp(searchField, "i");
+
+            $.getJSON('test.json', function (data) {
+                $.each(data, function (key, value) {
+                    if (value.name.search(expression) !== -1) {
+                        $('#result').append('<li class="list-group-item link-class">' + ' ID -> ' + value.id + ' | Name ->      ' + value.name + '</li>');
+                    }
+                });
+            });
+        });
+
+        // $('#result').on('click', 'li', function() {
+        //     $('#search').val($.trim(click_text[0]));
+        //     $("#result").html('');
+        // });
+    });
+</script>

@@ -2,9 +2,208 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionaire Game</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Your CSS styles here */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center align the content */
+        }
+
+        .question-box {
+            background-color: darkgreen;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .option-btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 45%; /* Adjust as needed */
+        }
+
+        .next-btn, .start-again-btn, .lifeline-btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="question-box">
+        <h3 id="question"></h3>
+    </div>
+    <div class="options-container" id="opinions"></div>
+    <button class="next-btn" id="nextButton">Next</button>
+    <button class="start-again-btn" id="startAgainButton" style="display: none;">Start Again</button>
+    <button class="lifeline-btn" id="lifelineButton">50/50</button>
+</div>
 
+<script>
+    $(document).ready(function(){
+        var data = [
+            {
+                question: "In what children's game are participants chased by someone designated \"It\"?",
+                content: [
+                    "Tag",
+                    "Simon Says",
+                    "Charades",
+                    "Hopscotch"
+                ],
+                correct: 0 // This indicates the index of the correct option in the content array
+            },
+            // Add more questions here if needed
+            {
+                question: "What is the capital of France?",
+                content: [
+                    "Berlin",
+                    "London",
+                    "Paris",
+                    "Rome"
+                ],
+                correct: 2 // Paris is the correct answer
+            }
+        ];
+
+        var currentQuestionIndex = 0;
+        var correctAnswersCount = 0;
+
+        function displayQuestion(index) {
+            var question = data[index];
+            $('#question').text(question.question);
+            $('#opinions').empty(); // Clear previous options
+
+            // Append buttons for each option
+            $.each(question.content, function(index, option){
+                var btn = $('<button class="option-btn">' + option + '</button>');
+                btn.click(function(){
+                    // Check if the clicked option is correct
+                    if (index === question.correct) {
+                        alert('Correct!');
+                        correctAnswersCount++;
+                    } else {
+                        alert('Incorrect!');
+                    }
+                    if (currentQuestionIndex < data.length - 1) {
+                        // If it's not the last question, show the next question
+                        currentQuestionIndex++;
+                        displayQuestion(currentQuestionIndex);
+                    } else {
+                        // If it's the last question, show the result
+                        $('#question').text('You answered ' + correctAnswersCount + ' questions correctly.');
+                        $('.options-container').hide();
+                        $('#nextButton').hide();
+                        $('#startAgainButton').show();
+                    }
+                });
+
+                // Append buttons to the options container
+                $('#opinions').append(btn);
+            });
+        }
+
+        // Display the first question initially
+        displayQuestion(currentQuestionIndex);
+
+        // Next button click handler
+        $('#nextButton').click(function(){
+            currentQuestionIndex++;
+            if (currentQuestionIndex < data.length) {
+                displayQuestion(currentQuestionIndex);
+            } else {
+                alert('No more questions!');
+            }
+        });
+
+        // Start Again button click handler
+        $('#startAgainButton').click(function(){
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
+            displayQuestion(currentQuestionIndex);
+            $('.options-container').show();
+            $('#nextButton').show();
+            $('#startAgainButton').hide();
+        });
+
+        // 50/50 button click handler
+        $('#lifelineButton').click(function(){
+            var question = data[currentQuestionIndex];
+            var incorrectIndexes = [];
+            for (var i = 0; i < question.content.length; i++) {
+                if (i !== question.correct) {
+                    incorrectIndexes.push(i);
+                }
+            }
+            var indexesToRemove = shuffle(incorrectIndexes).slice(0, 2);
+            $('#opinions').children('.option-btn').eq(indexesToRemove[0]).remove();
+            $('#opinions').children('.option-btn').eq(indexesToRemove[1] - 1).remove();
+        });
+
+        // Function to shuffle array
+        function shuffle(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+            while (0 !== currentIndex) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+            return array;
+        }
+        let customIterable = {
+            data: [1, 2, 3, 4, 5],
+            [Symbol.iterator]: function() {
+                let index = 0;
+                let data = this.data;
+                return {
+                    next: function() {
+                        return {
+                            value: data[index++],
+                            done: index > data.length
+                        };
+                    }
+                };
+            }
+        };
+
+// Iterate over the custom iterable object using a for...of loop
+        for (let item of customIterable) {
+            console.log(item);
+        }
+    });
+</script>
 </body>
 </html>
